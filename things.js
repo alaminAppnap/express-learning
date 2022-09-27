@@ -1,14 +1,46 @@
-let express = require('express');
+let expressJs = require('express');
 
-let router = express.Router();
+let router = expressJs.Router();
+let bodyParser = require('body-parser');
+const { json } = require('body-parser');
+
+
+
+// for parsing application/json
+router.use(bodyParser.json()); 
+
+// for parsing application/xwww-
+router.use(bodyParser.urlencoded({ extended: true })); 
+//form-urlencoded
+
 
 /** you must call all router prefix /things  because in index.php use things */
+
+
+/** start middleware */
+router.use('/user/:id', (req, res, next) => {
+   // if the user ID is 0, skip to the next router
+  if (req.params.id === '0') next('no-authorized')
+  // otherwise pass control to the next middleware function in this stack
+  else next()
+ }, (req, res, next) => {
+   console.log('Request Type:', req.method)
+   next()
+ })
+
+/** End middleware */
 
 router.get('/', function(req, res){
    res.send('GET route on things.');
 });
+
+router.get('/no-authorized', function(req, res){
+   res.send('you are not authorized.');
+});
+
 router.post('/', function(req, res){
-   res.send('POST route on things.');
+   console.log(req.body);
+   res.send("recieved your request! "+JSON.stringify(req.body, null, 2));
 });
 
 router.all('/all-method', function(req, res){
@@ -21,17 +53,15 @@ router.all('/all-method', function(req, res){
 
 
   /** regex route */
-  router.get('/regex/:id?', function(req, res){
+  router.get('/regex/:id', function(req, res){
    res.send('regexids: ' + req.params.id);
 }); 
 
- router.get('/:name?/:id?', function(req, res) {
-    res.send('id: ' + req.params.id + ' and name: ' + req.params.name);
+ router.get('/:name?/:id', function(req, res) {
+    res.send(`<strong>MY NAME IS :  ${req.params.name} <br> AND MY ID IS :  ${req.params.id}</strong>`);
  });
 
  
- 
-
 
 
 
